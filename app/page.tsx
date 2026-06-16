@@ -6,6 +6,7 @@ import { interviewQuestions } from '@/lib/content/interview-questions'
 import { flashcards } from '@/lib/content/flashcards'
 import { decisionTrees } from '@/lib/content/decision-trees'
 import { FadeIn, Eyebrow } from '@/components/section'
+import { HomeCta } from '@/components/home-cta'
 
 export default function Home() {
   return (
@@ -28,14 +29,7 @@ export default function Home() {
             </p>
           </FadeIn>
           <FadeIn delay={0.3}>
-            <div className="flex flex-wrap gap-4">
-              <Link href="/modules" className="group inline-flex items-center gap-2 bg-lime-accent text-ink-950 hover:bg-lime-glow px-6 py-3.5 font-mono text-xs uppercase tracking-wider transition-colors">
-                Start the curriculum <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link href="/interview" className="inline-flex items-center gap-2 border border-ink-700 hover:border-lime-accent/40 text-ink-100 px-6 py-3.5 font-mono text-xs uppercase tracking-wider transition-colors">
-                Jump to interview Q&A
-              </Link>
-            </div>
+            <HomeCta />
           </FadeIn>
 
           <FadeIn delay={0.4}>
