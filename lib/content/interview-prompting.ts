@@ -1,0 +1,317 @@
+import type { InterviewQuestion } from '../types'
+
+export const interviewPrompting: InterviewQuestion[] = [
+  {
+    id: 'tok-001',
+    category: 'Tokens & Cost',
+    difficulty: 'Mid',
+    scenario: 'Your team\'s LLM bill went from $2k/mo to $18k/mo over 4 months without a traffic increase. What do you investigate?',
+    answer: {
+      summary: 'Audit token spend per call type. Likely culprits: prompt bloat creep, no caching, retry storms, dev traffic in prod billing, or top-k inflation.',
+      steps: [
+        'Add token telemetry per call type if missing. Group by feature/route.',
+        'Diff system prompts vs 4 months ago — likely longer now.',
+        'Check if prompt caching is enabled and whether the cacheable prefix is correctly placed.',
+        'Look for retry storms: same prompt fired 3-5 times due to schema validation failures.',
+        'Look at top-k for RAG calls — if it grew from 3 to 10, that explains a 3x bump.',
+        'Tag dev/test traffic separately — sometimes loadtest runs hit prod-priced endpoints.',
+      ],
+      tradeoffs: ['Adding telemetry takes a day; running blind for another month costs $16k.'],
+      redFlags: [
+        'Suggesting "use a smaller model" without diagnosing.',
+        'Renegotiating with the provider before fixing the leak.',
+      ],
+      followUps: [
+        'What is your monthly cost regression check?',
+        'How do you cap runaway costs?',
+      ],
+    },
+  },
+  {
+    id: 'tok-002',
+    category: 'Tokens & Cost',
+    difficulty: 'Senior',
+    scenario: 'Walk me through the order of operations to cut LLM costs by 50% without dropping quality.',
+    answer: {
+      summary: 'Measure first. Then: prompt caching, top-k reduction with re-ranking, model right-sizing per step, output caps, batch APIs for non-realtime.',
+      steps: [
+        'Token telemetry per call type. Identify top 3 cost contributors.',
+        'Enable prompt caching on static system prompts and document context. ~30% savings on cached portions at 10% the rate.',
+        'For RAG: reduce top-k from 10 to 3 with a re-ranker. Often quality holds.',
+        'Right-size models: cheaper model for routing/extraction, flagship only for reasoning steps.',
+        'Cap output tokens. Use structured output (JSON schema) — removes filler text.',
+        'Move non-realtime jobs (eval runs, batch summarization) to batch API at 50% price.',
+      ],
+      tradeoffs: [
+        'Caching has 5-min TTL; bursty traffic gets less benefit.',
+        'Re-ranking adds latency but cuts cost.',
+      ],
+      redFlags: ['Skipping measurement and going straight to model swap.'],
+      followUps: ['What is the highest single lever in your experience?'],
+    },
+  },
+  {
+    id: 'tok-003',
+    category: 'Tokens & Cost',
+    difficulty: 'Mid',
+    scenario: 'When does prompt caching NOT help?',
+    answer: {
+      summary: 'When the prefix is too short, when it varies between calls, when traffic is sparse (TTL expires), or when the cacheable section is at the wrong position in the prompt.',
+      steps: [
+        'Caching has a min token threshold (~1k for most providers). Sub-1k prompts ineligible.',
+        'If your "static" prompt actually contains a per-user variable, caching breaks. Check carefully.',
+        'TTL is 5 min default; sparse traffic means cache expiry between calls.',
+        'Static parts must be at the prefix; the cache key is the prefix up to the breakpoint.',
+      ],
+      tradeoffs: ['Extended cache (Anthropic 1hr) is more expensive to maintain but helps low-traffic patterns.'],
+      redFlags: ['Assuming caching just works without verifying the cached_tokens field in the response.'],
+      followUps: ['How would you verify caching is hitting?'],
+    },
+  },
+  {
+    id: 'prompt-001',
+    category: 'Prompting',
+    difficulty: 'Mid',
+    scenario: 'A junior engineer pastes their entire monorepo into the AI tool and asks for a refactor. What is wrong with this?',
+    answer: {
+      summary: 'Too much context, no plan, single-shot ambition. The model loses track, generates internally inconsistent code, and you cannot review the result.',
+      steps: [
+        'Reduce context: send only the files the refactor touches plus 1-2 reference files for patterns.',
+        'Plan first: ask the model to enumerate files to change, in what order, and what risks. Review and correct the plan.',
+        'Execute in passes: implement one chunk, run tests, review the diff, then continue.',
+        'Maintain a decisions log the model rereads — names, patterns, what stays unchanged.',
+      ],
+      tradeoffs: [
+        'Plan-then-execute adds 30% time; saves 200% time vs cleaning up a monolithic refactor.',
+      ],
+      redFlags: [
+        'Treating context window as "more = better".',
+        'No review checkpoints between passes.',
+      ],
+      followUps: ['How do you handle a refactor across 50 files?'],
+    },
+  },
+  {
+    id: 'prompt-002',
+    category: 'Prompting',
+    difficulty: 'Mid',
+    scenario: 'How do you get an AI tool to follow your codebase\'s conventions when adding a new feature?',
+    answer: {
+      summary: 'Force the model to read existing patterns first, summarize them, then implement. Do not let it invent.',
+      steps: [
+        'Ask: "Read 2-3 similar features and tell me the pattern this codebase uses for X."',
+        'Have the model summarize the pattern in 5 bullets. Correct misreadings.',
+        'Ask: "Now implement using that pattern. Match file naming, error handling, test layout."',
+        'Spot check the result against an existing file. If wrong, point at a specific reference: "match this exactly."',
+      ],
+      tradeoffs: [
+        'Slower than one-shot prompting.',
+        'Can fail if the codebase has multiple conflicting patterns.',
+      ],
+      redFlags: ['Skipping the read step; model defaults to its training distribution.'],
+      followUps: ['What if patterns are inconsistent across the repo?'],
+    },
+  },
+  {
+    id: 'prompt-003',
+    category: 'Prompting',
+    difficulty: 'Senior',
+    scenario: 'How do you prompt for a from-scratch project so the AI does not over-engineer?',
+    answer: {
+      summary: 'Lock architectural decisions early, explicitly forbid abstractions, start with one critical path, refactor only when something happens twice.',
+      steps: [
+        'Write a 1-page project README: language, framework, deployment target, data store, auth method. Model rereads this.',
+        'Build the data model + one end-to-end critical path first. No second feature until the first works.',
+        'Tell the model: "no abstractions until needed twice. No service layer for one CRUD. No factory for one type."',
+        'After the spike works, ask: "what would you refactor now?" — separate working code from clean code, decide what to invest in.',
+      ],
+      tradeoffs: ['Less impressive looking code but ships faster and easier to extend.'],
+      redFlags: [
+        'Letting the model add Service/Repository/Factory for a single endpoint.',
+        'Building all features at 30% depth before any one at 100%.',
+      ],
+      followUps: ['When IS abstraction the right call?'],
+    },
+  },
+  {
+    id: 'prompt-004',
+    category: 'Prompting',
+    difficulty: 'Mid',
+    scenario: 'How do you trust AI-generated code in a code review?',
+    answer: {
+      summary: 'Same way as a junior\'s code, with sharper attention to: hallucinated APIs, plausible-but-wrong logic, over-engineering, tests that pass for the wrong reason.',
+      steps: [
+        'Run + type-check first. Catches hallucinated APIs and method signatures fast.',
+        'Read every if/branch. Models are good at "looks reasonable", weaker on edge cases.',
+        'Strip unnecessary abstractions. If YAGNI bar is not met, delete it.',
+        'Read the test, not just the green check. Are the assertions actually checking the behavior or just running the code?',
+      ],
+      tradeoffs: ['Reviewing AI code takes the same energy as reviewing a junior\'s, but the volume is higher.'],
+      redFlags: [
+        'Approving because tests pass without reading them.',
+        'Trusting "looks plausible" without running.',
+      ],
+      followUps: ['What automated checks help here?'],
+    },
+  },
+  {
+    id: 'prompt-005',
+    category: 'Prompting',
+    difficulty: 'Junior',
+    scenario: 'What is "prompt injection" and how do you defend against it?',
+    answer: {
+      summary: 'A user input that overrides system instructions ("ignore previous, do X"). Defense is layered: input filtering, structured output, output validation, separating user content from instructions.',
+      steps: [
+        'Treat user input as data, not instructions. Wrap it: "User said: <user>...</user>".',
+        'Use structured output (JSON schema) to bound the model\'s ability to "go off-script".',
+        'Validate output before acting on it. Never let the LLM directly execute privileged actions.',
+        'For agentic systems, sandbox tools the model can call.',
+      ],
+      tradeoffs: ['No defense is perfect; depth matters.'],
+      redFlags: ['Believing a single system-prompt instruction is enough.'],
+      followUps: ['What about indirect prompt injection through retrieved documents?'],
+    },
+  },
+  {
+    id: 'btl-001',
+    category: 'Bottlenecks',
+    difficulty: 'Senior',
+    scenario: 'You join a project. Latency p95 is 4s; budget is 1.5s. Walk me through the first day.',
+    answer: {
+      summary: 'Trace a single request, find the longest span, attack that. Resist proposing fixes until you have data.',
+      steps: [
+        'Get a trace per request — LangSmith, LangFuse, or whatever\'s set up. If none exist, instrument one path with OpenTelemetry.',
+        'Sample 20 traces, find the median p95 path. Identify the largest span.',
+        'Common culprits in order: LLM call (output tokens), retrieval (top-k size, re-ranker), sequential calls that could parallelize, network round trips.',
+        'Quick wins: cap max_tokens, reduce top-k, parallelize independent calls, enable streaming.',
+      ],
+      tradeoffs: [
+        'Streaming hides latency, does not reduce it. Still useful for UX.',
+        'Reducing top-k may hurt recall — pair with re-ranker.',
+      ],
+      redFlags: [
+        'Proposing fixes without trace data.',
+        'Suggesting a smaller model as the first fix.',
+      ],
+      followUps: ['What if the LLM call itself is the bottleneck?'],
+    },
+  },
+  {
+    id: 'btl-002',
+    category: 'Bottlenecks',
+    difficulty: 'Mid',
+    scenario: 'Quality complaints come in. You have no eval set. What do you do first?',
+    answer: {
+      summary: 'Build the eval set. Without it, every fix is a guess.',
+      steps: [
+        'Sample 50-100 production queries (PII redacted). Categorize by intent.',
+        'For each, write expected behavior — exact output if structured, criteria if open-ended.',
+        'Run current system; score; categorize failures.',
+        'The biggest failure category is your first fix target.',
+        'Version the eval set in git, run on PR.',
+      ],
+      tradeoffs: ['Eval set construction takes 1-2 days; pays back forever.'],
+      redFlags: [
+        'Tuning prompts before having the eval.',
+        'Stopping at "the model is bad".',
+      ],
+      followUps: ['How do you pick the 50 queries?'],
+    },
+  },
+  {
+    id: 'btl-003',
+    category: 'Bottlenecks',
+    difficulty: 'Senior',
+    scenario: 'A RAG system has 95% recall@10 but answers are still wrong. Diagnose.',
+    answer: {
+      summary: 'Right chunks are retrieved but in wrong positions, or model is not using them. Test by feeding curated context.',
+      steps: [
+        'Take 20 failing queries. Manually curate the correct context. Feed it to the model.',
+        'If model nails answers with curated context: retrieval ordering issue. Add a cross-encoder re-ranker.',
+        'If model still fails: generation issue. Check prompt grounding instructions, lower temperature, check output format.',
+        'Verify the model is actually using the chunks: check for citations, check faithfulness scores.',
+      ],
+      tradeoffs: ['Re-ranker adds 100-200ms; usually worth it.'],
+      redFlags: [
+        'Tuning the prompt before isolating retrieval vs generation.',
+      ],
+      followUps: ['How do you measure faithfulness automatically?'],
+    },
+  },
+  {
+    id: 'btl-004',
+    category: 'Bottlenecks',
+    difficulty: 'Mid',
+    scenario: 'Production AI errors spiked yesterday. What is your investigation order?',
+    answer: {
+      summary: 'Classify error types first. Each class has a different root cause.',
+      steps: [
+        'Group errors by class: rate limit, context overflow, JSON parse, network timeout, content filter.',
+        'Rate limits: usually fix by routing across providers, not retrying harder.',
+        'Context overflow: prompt size grew past model limit; check truncation logic.',
+        'JSON parse: switch to JSON mode or tool calling; loosen schema.',
+        'Network timeout: provider issue or our infra; check provider status.',
+        'Content filter: input or output triggering safety classifier; investigate by category.',
+      ],
+      tradeoffs: ['Multi-provider routing adds complexity; pays back during outages.'],
+      redFlags: ['Increasing retry counts as the fix.'],
+      followUps: ['How do you alert on regressions in error rate?'],
+    },
+  },
+  {
+    id: 'btl-005',
+    category: 'Bottlenecks',
+    difficulty: 'Junior',
+    scenario: 'How do you find the bottleneck in a system you have never seen before?',
+    answer: {
+      summary: 'Read before you touch. Map the request path, find traces, read incidents, then propose.',
+      steps: [
+        'Map: what services does a request hit? Where does it call the LLM?',
+        'Find or build observability — traces, metrics, error logs.',
+        'Read 10 sampled traces; find the largest spans.',
+        'Read 30 days of incidents; find recurring patterns.',
+        'Propose 2-3 hypotheses ranked by evidence, not guesses.',
+      ],
+      tradeoffs: ['Investigation takes longer than fixing; saves rework when the wrong thing is fixed.'],
+      redFlags: ['Suggesting fixes in week 1 without data.'],
+      followUps: ['What if there are no traces?'],
+    },
+  },
+  {
+    id: 'btl-006',
+    category: 'Bottlenecks',
+    difficulty: 'Senior',
+    scenario: 'A working system gets slow after a deploy. What is your bisect strategy?',
+    answer: {
+      summary: 'Correlate with metrics across deploys. The deploy that broke it shows in latency, token spend, retry rate, or error class.',
+      steps: [
+        'Identify when p95 crossed threshold X. Look at all deploys in that window.',
+        'Cross-check metric correlations: did token spend per call jump? Did retry rate climb? Did chunk size change?',
+        'Watch for silent changes: provider model upgrade, embedding model deprecation, vector index rebuild.',
+        'If a single PR is suspect, test in staging with a controlled query set.',
+      ],
+      tradeoffs: ['Detailed metrics enable fast bisect; lacking them means manual investigation.'],
+      redFlags: [
+        'Reverting all recent deploys without diagnosing.',
+      ],
+      followUps: ['What do you instrument to make future bisects faster?'],
+    },
+  },
+  {
+    id: 'btl-007',
+    category: 'Bottlenecks',
+    difficulty: 'Mid',
+    scenario: 'You suspect the bottleneck is process, not technical. What do you tell your manager?',
+    answer: {
+      summary: 'Name the gap directly. No eval, no traces, no review of prompt changes — these are process issues that no model swap fixes.',
+      steps: [
+        'Quantify the cost of the gap: "3 of 5 recent quality regressions could have been caught by an eval set; 2 days of debugging each."',
+        'Propose minimal fix: 50-query eval set, traces in the request path, prompt diff review in PR template.',
+        'Time-box: 2 weeks of process work prevents N weeks of recurring bugs.',
+      ],
+      tradeoffs: ['Process work is unglamorous and rarely lands in roadmaps unless someone advocates for it.'],
+      redFlags: ['Blaming the model when the team has no eval.'],
+      followUps: ['How do you make eval work first-class in the team\'s workflow?'],
+    },
+  },
+]
