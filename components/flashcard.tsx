@@ -1,15 +1,17 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useMemo, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import type { Flashcard as FC } from '@/lib/types'
 import { ChevronLeft, ChevronRight, Shuffle, RotateCcw } from 'lucide-react'
+import { useProgress } from '@/lib/use-progress'
 
 export function FlashcardDeck({ cards }: { cards: FC[] }) {
   const [order, setOrder] = useState<number[]>(() => cards.map((_, i) => i))
   const [idx, setIdx] = useState(0)
   const [flipped, setFlipped] = useState(false)
   const [filter, setFilter] = useState<string>('All')
+  const { recordFlashcardSeen } = useProgress()
 
   const categories = useMemo(() => ['All', ...Array.from(new Set(cards.map(c => c.category)))], [cards])
 
@@ -19,6 +21,10 @@ export function FlashcardDeck({ cards }: { cards: FC[] }) {
   )
 
   const card = cards[filtered[idx % filtered.length]]
+
+  useEffect(() => {
+    if (flipped && card) recordFlashcardSeen(card.id)
+  }, [flipped, card, recordFlashcardSeen])
 
   function shuffle() {
     const a = [...order]

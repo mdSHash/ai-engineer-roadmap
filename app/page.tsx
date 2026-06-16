@@ -121,6 +121,23 @@ export default function Home() {
           />
         </div>
       </section>
+
+      <section className="px-6 md:px-12 py-20 md:py-24 border-t border-ink-800">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-6">
+          <FeatureCard
+            href="/register"
+            eyebrow="Track your progress"
+            title="Sign up — it's free"
+            body="Create an account to log every module, quiz score, flashcard, and decision tree you complete. Your progress only resets when you reset it."
+          />
+          <FeatureCard
+            href="/leaderboard"
+            eyebrow="Compete"
+            title="Leaderboard"
+            body="See how you stack up against everyone else working through the roadmap."
+          />
+        </div>
+      </section>
     </div>
   )
 }

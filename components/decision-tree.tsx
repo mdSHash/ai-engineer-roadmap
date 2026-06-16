@@ -1,15 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { DecisionTree as DT } from '@/lib/types'
 import { ArrowRight, RotateCcw, ChevronLeft } from 'lucide-react'
+import { useProgress } from '@/lib/use-progress'
 
 interface Step { nodeId: string; pickedLabel?: string }
 
 export function DecisionTreeRunner({ tree }: { tree: DT }) {
   const [path, setPath] = useState<Step[]>([{ nodeId: tree.rootId }])
   const current = tree.nodes[path[path.length - 1].nodeId]
+  const { recordTreeCompleted } = useProgress()
+
+  useEffect(() => {
+    if (current && current.recommendation) recordTreeCompleted(tree.slug)
+  }, [current, tree.slug, recordTreeCompleted])
 
   function pick(opt: { label: string; nextId: string }) {
     setPath(p => {

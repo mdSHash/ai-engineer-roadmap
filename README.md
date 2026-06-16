@@ -13,8 +13,14 @@ Modern AI interviews don't ask you to write code; they ask you to defend choices
 - **3 interactive decision trees** — walk through "Should I use RAG?", "Which vector DB?", and "Which chunking strategy?" and arrive at a senior-grade recommendation.
 - **42 flashcards** — high-leverage facts you'll be asked, organized by topic.
 - **8 module quizzes** — 40 questions total, each with a written explanation of why the right answer is right.
+- **Account system + progress tracking** — register, sign in, and your progress is saved per-account. It only resets when you reset it.
+- **Leaderboard** — see who is ahead on the roadmap.
 
 Every section is opinionated: it tells you what a *senior* answer sounds like and what flags an answer as junior.
+
+## Authentication & data
+
+Auth is **client-side only**, backed by `localStorage`. Passwords are hashed with **PBKDF2-SHA256 (100 000 iterations) + per-user salt** via the Web Crypto API; plaintext passwords are never stored. Progress is stored per-account in the same browser. See [`SECURITY.md`](./SECURITY.md) for the threat model and known limitations.
 
 ---
 
@@ -60,9 +66,15 @@ ai-roadmap/
 │   ├── decision-trees/[slug]/    Interactive decision-tree runner
 │   ├── flashcards/               Flashcard deck
 │   ├── interview/                Searchable scenario bank
+│   ├── login/                    Sign-in page
+│   ├── register/                 Sign-up page
+│   ├── profile/                  Personal progress dashboard
+│   ├── leaderboard/              Cross-account leaderboard
 │   └── page.tsx                  Home
 ├── components/                   UI primitives + interactive components
 │   ├── nav.tsx
+│   ├── auth-provider.tsx
+│   ├── auth-form.tsx
 │   ├── module-content.tsx
 │   ├── quiz.tsx
 │   ├── flashcard.tsx
@@ -82,6 +94,8 @@ ai-roadmap/
 │   │   ├── flashcards.ts
 │   │   ├── decision-trees.ts
 │   │   └── quizzes.ts
+│   ├── auth.ts                   Client-side auth + password hashing
+│   ├── use-progress.ts           Progress + leaderboard hooks
 │   ├── types.ts
 │   └── utils.ts
 ├── public/

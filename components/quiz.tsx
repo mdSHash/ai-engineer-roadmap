@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { CheckCircle2, XCircle, ArrowRight, RotateCcw } from 'lucide-react'
 import type { Quiz as QuizT } from '@/lib/types'
+import { useProgress } from '@/lib/use-progress'
 
 export function Quiz({ quiz }: { quiz: QuizT }) {
   const [idx, setIdx] = useState(0)
@@ -12,6 +13,11 @@ export function Quiz({ quiz }: { quiz: QuizT }) {
   const [revealed, setRevealed] = useState(false)
   const [score, setScore] = useState(0)
   const [done, setDone] = useState(false)
+  const { recordQuizScore } = useProgress()
+
+  useEffect(() => {
+    if (done) recordQuizScore(quiz.slug, score, quiz.questions.length)
+  }, [done, score, quiz, recordQuizScore])
 
   const q = quiz.questions[idx]
   const isCorrect = selected === q.correctIndex
