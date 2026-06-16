@@ -1,10 +1,12 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown, Search } from 'lucide-react'
 import type { InterviewQuestion } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { useAuth } from './auth-provider'
+import { getAllProgress, type SrStatus } from '@/lib/interview-progress'
 
 const ALL = 'All'
 
@@ -13,6 +15,16 @@ export function InterviewExplorer({ questions, categories }: { questions: Interv
   const [diff, setDiff] = useState<string>(ALL)
   const [query, setQuery] = useState('')
   const [openId, setOpenId] = useState<string | null>(null)
+
+  const { user } = useAuth()
+  const [statusMap, setStatusMap] = useState<Record<string, SrStatus>>({})
+  useEffect(() => {
+    if (!user) return setStatusMap({})
+    const all = getAllProgress(user.id)
+    const map: Record<string, SrStatus> = {}
+    for (const [id, p] of Object.entries(all)) map[id] = p.status
+    setStatusMap(map)
+  }, [user, questions])
 
   const filtered = useMemo(() => {
     return questions.filter(q => {
@@ -87,9 +99,10 @@ export function InterviewExplorer({ questions, categories }: { questions: Interv
               className="w-full text-left p-5 border border-ink-700 hover:border-lime-accent/40 bg-ink-900/30 hover:bg-ink-800/40 transition-all"
             >
               <div className="flex items-start justify-between gap-4 mb-2">
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-2 flex-wrap items-center">
                   <span className="font-mono text-[10px] uppercase tracking-wider text-lime-accent">{q.category}</span>
                   <span className="font-mono text-[10px] uppercase tracking-wider text-amber-accent">{q.difficulty}</span>
+                  {statusMap[q.id] && <StatusChip status={statusMap[q.id]} />}
                 </div>
                 <ChevronDown className={cn('w-4 h-4 text-ink-400 transition-transform shrink-0', openId === q.id && 'rotate-180')} />
               </div>
@@ -159,5 +172,20 @@ function BulletList({ items, tone }: { items: string[]; tone: 'neutral' | 'warn'
         </li>
       ))}
     </ul>
+  )
+}
+
+function StatusChip({ status }: { status: SrStatus }) {
+  const tone = {
+    new:      'border-ink-700 text-ink-400',
+    learning: 'border-amber-accent/60 text-amber-accent',
+    review:   'border-lime-accent/60 text-lime-accent',
+    mastered: 'border-lime-accent text-lime-accent bg-lime-accent/10',
+  }[status]
+  const label = status === 'mastered' ? 'mastered' : status === 'review' ? 'review' : status === 'learning' ? 'learning' : 'new'
+  return (
+    <span className={cn('font-mono text-[9px] uppercase tracking-wider border px-1.5 py-0.5', tone)}>
+      {label}
+    </span>
   )
 }

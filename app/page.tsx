@@ -80,7 +80,7 @@ export default function Home() {
             <div className="flex flex-wrap items-end justify-between gap-6 mb-12">
               <div>
                 <Eyebrow>Curriculum</Eyebrow>
-                <h2 className="font-serif text-display-lg text-ink-50 mt-4">Eight modules. Every decision.</h2>
+                <h2 className="font-serif text-display-lg text-ink-50 mt-4">{moduleList.length} modules. Every decision.</h2>
               </div>
               <Link href="/modules" className="font-mono text-xs uppercase tracking-wider text-ink-300 hover:text-lime-accent">All modules →</Link>
             </div>
@@ -94,7 +94,13 @@ export default function Home() {
       </section>
 
       <section className="px-6 md:px-12 py-20 md:py-24 border-t border-ink-800">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <FeatureCard
+            href="/visualizations"
+            eyebrow="See the concepts"
+            title="Interactive visualizations"
+            body="Chunking strategies, RAG pipeline, token economics — animated and interactive."
+          />
           <FeatureCard
             href="/decision-trees"
             eyebrow="Interactive"
@@ -105,13 +111,13 @@ export default function Home() {
             href="/flashcards"
             eyebrow="Spaced practice"
             title="Flashcards"
-            body="42 high-leverage facts you'll be asked. Flip, shuffle, filter by topic."
+            body="High-leverage facts you'll be asked. Flip, shuffle, filter by topic."
           />
           <FeatureCard
             href="/interview"
-            eyebrow="Scenario bank"
-            title="46 interview scenarios"
-            body="Real questions with model answers, trade-offs, red flags, and follow-up probes."
+            eyebrow="Three drill modes"
+            title="Interview practice"
+            body="Active recall with spaced repetition, timed mock interviews, or quick reference. Pick the mode that matches your goal."
           />
         </div>
       </section>

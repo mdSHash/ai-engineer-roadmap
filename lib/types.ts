@@ -7,6 +7,13 @@ export type ModuleSlug =
   | 'bottlenecks'
   | 'evaluation'
   | 'lifecycle'
+  | 'llm-internals'
+  | 'embeddings'
+  | 'agents-and-tools'
+  | 'fine-tuning'
+  | 'structured-outputs'
+  | 'reasoning-patterns'
+  | 'adversarial-defense'
 
 export interface Module {
   slug: ModuleSlug

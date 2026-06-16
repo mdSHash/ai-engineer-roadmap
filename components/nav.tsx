@@ -11,6 +11,7 @@ import { LogOut, User as UserIcon } from 'lucide-react'
 const links = [
   { href: '/',                label: 'Home' },
   { href: '/modules',         label: 'Modules' },
+  { href: '/visualizations',  label: 'Visuals' },
   { href: '/decision-trees',  label: 'Trees' },
   { href: '/flashcards',      label: 'Cards' },
   { href: '/interview',       label: 'Interview' },
