@@ -2,7 +2,7 @@ import type { Module } from '../types'
 
 export const fineTuningModule: Module = {
   slug: 'fine-tuning' as Module['slug'],
-  number: '12',
+  number: '11',
   title: 'Fine-tuning vs RAG vs prompting — the real decision',
   tagline: 'Fine-tuning teaches HOW. RAG teaches WHAT. Prompting unlocks capability. Mix them up and you ship the wrong thing.',
   duration: '45 min read',

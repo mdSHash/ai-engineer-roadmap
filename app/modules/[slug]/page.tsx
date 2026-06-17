@@ -17,11 +17,13 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
 export default function ModulePage({ params }: { params: { slug: string } }) {
   const mod = modules[params.slug as ModuleSlug]
   if (!mod) notFound()
-  const related = (mod.relatedSlugs ?? []).map(s => modules[s]).filter(Boolean)
+  const idx = moduleList.findIndex(m => m.slug === mod.slug)
+  const prev = idx > 0 ? moduleList[idx - 1] : undefined
+  const next = idx >= 0 && idx < moduleList.length - 1 ? moduleList[idx + 1] : undefined
   return (
     <>
       <TrackModuleView slug={mod.slug} />
-      <ModuleContent mod={mod} related={related} />
+      <ModuleContent mod={mod} prev={prev} next={next} />
     </>
   )
 }

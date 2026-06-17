@@ -2,7 +2,7 @@ import type { Module } from '../types'
 
 export const bottlenecksModule: Module = {
   slug: 'bottlenecks',
-  number: '06',
+  number: '13',
   title: 'Finding bottlenecks in projects (new or familiar)',
   tagline: 'You join a project. It is slow, expensive, or unreliable. Your first three days decide everything.',
   duration: '40 min read',

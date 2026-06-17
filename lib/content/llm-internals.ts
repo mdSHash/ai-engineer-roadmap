@@ -2,7 +2,7 @@ import type { Module } from '../types'
 
 export const llmInternalsModule: Module = {
   slug: 'llm-internals' as Module['slug'],
-  number: '09',
+  number: '01',
   title: 'How LLMs actually work',
   tagline: 'Tokens, attention, KV cache, sampling. Every other module assumes you know this.',
   duration: '50 min read',

@@ -1,15 +1,16 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Search, Brain, Timer } from 'lucide-react'
+import { Search, Brain, Timer, Zap } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-export type InterviewMode = 'browse' | 'study' | 'mock'
+export type InterviewMode = 'browse' | 'study' | 'drill' | 'mock'
 
 const MODES: { value: InterviewMode; label: string; help: string; icon: React.ReactNode }[] = [
-  { value: 'study',  label: 'Study',  help: 'Active recall + spaced repetition',  icon: <Brain  className="w-4 h-4" /> },
-  { value: 'mock',   label: 'Mock',   help: 'Timed mixed-domain interview',       icon: <Timer  className="w-4 h-4" /> },
-  { value: 'browse', label: 'Browse', help: 'Searchable reference list',          icon: <Search className="w-4 h-4" /> },
+  { value: 'study',  label: 'Study',  help: 'Active recall + spaced repetition',          icon: <Brain  className="w-4 h-4" /> },
+  { value: 'drill',  label: 'Drill',  help: 'Cram a topic — does not affect SR schedule', icon: <Zap    className="w-4 h-4" /> },
+  { value: 'mock',   label: 'Mock',   help: 'Timed mixed-domain interview',                icon: <Timer  className="w-4 h-4" /> },
+  { value: 'browse', label: 'Browse', help: 'Searchable reference list',                   icon: <Search className="w-4 h-4" /> },
 ]
 
 export function InterviewModeSwitcher({ value, onChange }: { value: InterviewMode; onChange: (m: InterviewMode) => void }) {

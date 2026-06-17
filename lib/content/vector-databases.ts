@@ -2,7 +2,7 @@ import type { Module } from '../types'
 
 export const vectorDbModule: Module = {
   slug: 'vector-databases',
-  number: '02',
+  number: '04',
   title: 'Vector databases — picking the right one',
   tagline: 'Pinecone vs Qdrant vs pgvector vs Weaviate vs Milvus is not about features. It is about constraints.',
   duration: '35 min read',

@@ -2,7 +2,7 @@ import type { Module } from '../types'
 
 export const evaluationModule: Module = {
   slug: 'evaluation',
-  number: '07',
+  number: '12',
   title: 'Evaluation and observability — without it, you are guessing',
   tagline: 'You cannot ship what you cannot measure. Evals are the most undervalued AI skill in interviews.',
   duration: '40 min read',

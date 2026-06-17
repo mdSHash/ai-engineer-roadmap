@@ -2,7 +2,7 @@ import type { Module, ModuleSlug } from '../types'
 
 export const structuredOutputsModule: Module = {
   slug: 'structured-outputs' as ModuleSlug,
-  number: '13',
+  number: '07',
   title: 'Structured outputs — making models return usable data',
   tagline: 'Every production AI system depends on this layer. Junior engineers tell models "respond in JSON" and ship bugs.',
   duration: '35 min read',

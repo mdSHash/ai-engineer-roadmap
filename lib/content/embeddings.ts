@@ -2,7 +2,7 @@ import type { Module } from '../types'
 
 export const embeddingsModule: Module = {
   slug: 'embeddings' as Module['slug'],
-  number: '10',
+  number: '02',
   title: 'Embeddings — what the vectors actually mean',
   tagline: 'Vector DBs, RAG, and chunking all sit on top of embeddings. Most engineers never learn what they are.',
   duration: '40 min read',

@@ -2,7 +2,7 @@ import type { Module } from '../types'
 
 export const lifecycleModule: Module = {
   slug: 'lifecycle',
-  number: '08',
+  number: '15',
   title: 'The AI engineering lifecycle — every phase mapped',
   tagline: 'From "we should add AI" to "we have an AI system in prod for 12 months." Know every step.',
   duration: '45 min read',

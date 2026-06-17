@@ -33,22 +33,25 @@ export const modules: Record<ModuleSlug, Module> = {
   'adversarial-defense':  adversarialDefenseModule,
 }
 
-// Order matters for the curriculum reading flow.
-// Foundations first, then intermediate, then advanced.
+// Pedagogical sequence — each module builds on the ones before it.
+// Foundations: 01-05 (mechanics → embeddings → text prep → storage → RAG)
+// Generation control: 06-08 (cost → reliable outputs → AI tooling)
+// Advanced techniques: 09-11 (reasoning → agents → adaptation)
+// Production operations: 12-15 (eval → bottlenecks → safety → lifecycle)
 export const moduleList: Module[] = [
-  llmInternalsModule,        // 09 — Foundations
-  embeddingsModule,          // 10 — Foundations
-  ragModule,                 // 01 — Foundations
-  vectorDbModule,            // 02 — Foundations
-  chunkingModule,            // 03 — Foundations
-  tokenOptimizationModule,   // 04 — Intermediate
-  promptingForCodeModule,    // 05 — Intermediate
-  agentsAndToolsModule,      // 11 — Intermediate
-  structuredOutputsModule,   // 13 — Intermediate
-  fineTuningModule,          // 12 — Intermediate
-  reasoningPatternsModule,   // 14 — Intermediate
-  bottlenecksModule,         // 06 — Intermediate
-  evaluationModule,          // 07 — Intermediate
-  adversarialDefenseModule,  // 15 — Advanced
-  lifecycleModule,           // 08 — Advanced
+  llmInternalsModule,        // 01
+  embeddingsModule,          // 02
+  chunkingModule,            // 03
+  vectorDbModule,            // 04
+  ragModule,                 // 05
+  tokenOptimizationModule,   // 06
+  structuredOutputsModule,   // 07
+  promptingForCodeModule,    // 08
+  reasoningPatternsModule,   // 09
+  agentsAndToolsModule,      // 10
+  fineTuningModule,          // 11
+  evaluationModule,          // 12
+  bottlenecksModule,         // 13
+  adversarialDefenseModule,  // 14
+  lifecycleModule,           // 15
 ]

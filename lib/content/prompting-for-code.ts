@@ -2,7 +2,7 @@ import type { Module } from '../types'
 
 export const promptingForCodeModule: Module = {
   slug: 'prompting-for-code',
-  number: '05',
+  number: '08',
   title: 'The art of asking AI to write code for you',
   tagline: 'Small fixes, large refactors, and from-scratch projects each need a different conversation. Master all three.',
   duration: '50 min read',

@@ -29,6 +29,8 @@ export interface Module {
   relatedSlugs?: ModuleSlug[]
 }
 
+export type VizSlug = 'chunking-comparator' | 'rag-pipeline-flow' | 'token-cost-calculator'
+
 export interface Section {
   heading: string
   body: string[]
@@ -36,6 +38,7 @@ export interface Section {
   matrix?: { headers: string[]; rows: string[][]; caption?: string }
   callout?: { kind: 'rule' | 'warn' | 'insight'; text: string }
   decisionRules?: { when: string; pick: string; why: string }[]
+  viz?: { slug: VizSlug; caption?: string }
 }
 
 export interface InterviewQuestion {

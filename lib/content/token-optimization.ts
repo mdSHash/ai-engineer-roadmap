@@ -2,7 +2,7 @@ import type { Module } from '../types'
 
 export const tokenOptimizationModule: Module = {
   slug: 'token-optimization',
-  number: '04',
+  number: '06',
   title: 'Token economics — getting the same quality for 10% the cost',
   tagline: 'Most production LLM bills are 5-10x what they should be. The fix is not "use a smaller model." It is hygiene.',
   duration: '40 min read',
@@ -33,6 +33,7 @@ export const tokenOptimizationModule: Module = {
         'TTL: typically 5 minutes (Anthropic) to 1 hour with extended caching. Calls within the TTL hit cache; outside, you pay full price for the next miss.',
       ],
       callout: { kind: 'insight', text: 'Real-world impact: a chatbot with a 4k system prompt and 50k chat traffic/day saves ~$300/day on Claude Sonnet just from prompt caching. The change is a one-line marker.' },
+      viz: { slug: 'token-cost-calculator', caption: 'flip the cache toggle and watch the bill' },
     },
     {
       heading: 'Lever 2: Pick the right model for the right task',

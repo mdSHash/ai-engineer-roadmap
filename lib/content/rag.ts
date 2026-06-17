@@ -2,7 +2,7 @@ import type { Module } from '../types'
 
 export const ragModule: Module = {
   slug: 'rag',
-  number: '01',
+  number: '05',
   title: 'When to RAG (and when not to)',
   tagline: 'RAG is a tool, not a religion. Most teams over-apply it. Learn the decision.',
   duration: '45 min read',
@@ -81,6 +81,7 @@ export const ragModule: Module = {
         'BM25 wins on rare exact terms (product SKUs, error codes, proper nouns). Dense wins on conceptual queries ("how do I cancel"). Most real queries need both.',
         'Cost: roughly 1.5x naive RAG (one extra retrieval call). Quality lift: 10-25% recall improvement on heterogeneous query workloads. Almost always worth it.',
       ],
+      viz: { slug: 'rag-pipeline-flow', caption: 'toggle hybrid + re-rank to see the latency/cost shift' },
     },
     {
       heading: 'Re-ranking: cheap, large impact',

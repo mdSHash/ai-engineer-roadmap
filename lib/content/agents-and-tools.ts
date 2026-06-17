@@ -2,7 +2,7 @@ import type { Module } from '../types'
 
 export const agentsAndToolsModule: Module = {
   slug: 'agents-and-tools',
-  number: '11',
+  number: '10',
   title: 'Agents and tool use',
   tagline: 'How LLMs actually take actions. The hottest interview topic in 2025-2026.',
   duration: '50 min read',

@@ -2,7 +2,7 @@ import type { Module } from '../types'
 
 export const adversarialDefenseModule: Module = {
   slug: 'adversarial-defense' as Module['slug'],
-  number: '15',
+  number: '14',
   title: 'Prompt injection, jailbreaks, and exfiltration',
   tagline: 'LLMs cannot tell instructions from data. This is architectural, not a bug. Layered defense is the only real answer.',
   duration: '50 min read',

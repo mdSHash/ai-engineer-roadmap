@@ -53,6 +53,7 @@ export const chunkingModule: Module = {
         'Weaknesses: still ignores document structure (headings, tables). Tuning chunk size and overlap is per-corpus and rarely revisited.',
       ],
       callout: { kind: 'insight', text: 'Recursive character splitting with chunk_size=512 and overlap=64 is the universal "I\'m not sure what to do" default. It is rarely optimal but rarely terrible.' },
+      viz: { slug: 'chunking-comparator', caption: 'same document, four strategies, side by side' },
     },
     {
       heading: 'Semantic chunking: split where topics shift',

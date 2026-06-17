@@ -2,7 +2,7 @@ import type { Module } from '../types'
 
 export const reasoningPatternsModule: Module = {
   slug: 'reasoning-patterns' as Module['slug'],
-  number: '14',
+  number: '09',
   title: 'Reasoning patterns — CoT, ToT, self-consistency, ReAct',
   tagline: 'When does "think step by step" help? When does it hurt? Why do reasoning models change the rules?',
   duration: '40 min read',

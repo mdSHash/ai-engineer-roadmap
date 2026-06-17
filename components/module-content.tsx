@@ -2,10 +2,11 @@
 
 import type { Module, Section } from '@/lib/types'
 import { Callout, DecisionRule, FadeIn, Heading, Matrix } from './section'
+import { InlineViz } from './inline-viz'
 import Link from 'next/link'
 import { ArrowRight, AlertTriangle, Sparkles } from 'lucide-react'
 
-export function ModuleContent({ mod, related }: { mod: Module; related: Module[] }) {
+export function ModuleContent({ mod, next, prev }: { mod: Module; next?: Module; prev?: Module }) {
   return (
     <article className="max-w-4xl mx-auto px-6 md:px-12 py-12 md:py-20">
       <FadeIn>
@@ -65,22 +66,37 @@ export function ModuleContent({ mod, related }: { mod: Module; related: Module[]
       </FadeIn>
 
       <FadeIn>
-        <div className="mt-16 flex flex-col md:flex-row gap-4 justify-between items-stretch">
-          <Link href={`/quiz/${mod.slug}`} className="flex-1 group p-6 border border-ink-700 hover:border-lime-accent/40 bg-ink-900/30 transition-all flex items-center justify-between gap-4">
-            <div>
-              <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-lime-accent mb-2">Test yourself</div>
-              <div className="font-serif text-xl text-ink-50">5-question quiz</div>
-            </div>
-            <ArrowRight className="w-5 h-5 text-ink-400 group-hover:text-lime-accent group-hover:translate-x-1 transition-all" />
-          </Link>
-          {related.length > 0 && (
-            <Link href={`/modules/${related[0].slug}`} className="flex-1 group p-6 border border-ink-700 hover:border-lime-accent/40 bg-ink-900/30 transition-all flex items-center justify-between gap-4">
-              <div>
-                <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-ink-400 mb-2">Up next</div>
-                <div className="font-serif text-xl text-ink-50">{related[0].title}</div>
+        <div className="mt-16 grid md:grid-cols-3 gap-4">
+          {prev ? (
+            <Link href={`/modules/${prev.slug}`} className="group p-6 border border-ink-700 hover:border-lime-accent/40 bg-ink-900/30 transition-all flex items-center gap-3">
+              <ArrowRight className="w-5 h-5 text-ink-400 group-hover:text-lime-accent rotate-180 group-hover:-translate-x-1 transition-all shrink-0" />
+              <div className="min-w-0">
+                <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-ink-400 mb-1">Previous · {prev.number}</div>
+                <div className="font-serif text-base text-ink-200 truncate">{prev.title}</div>
               </div>
-              <ArrowRight className="w-5 h-5 text-ink-400 group-hover:text-lime-accent group-hover:translate-x-1 transition-all" />
             </Link>
+          ) : (
+            <div className="hidden md:block" />
+          )}
+          <Link href={`/quiz/${mod.slug}`} className="group p-6 border border-lime-accent/30 bg-lime-accent/5 hover:border-lime-accent/60 transition-all flex items-center justify-between gap-3">
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-lime-accent mb-1">Test yourself</div>
+              <div className="font-serif text-base text-ink-50">5-question quiz</div>
+            </div>
+            <ArrowRight className="w-5 h-5 text-lime-accent group-hover:translate-x-1 transition-all" />
+          </Link>
+          {next ? (
+            <Link href={`/modules/${next.slug}`} className="group p-6 border border-ink-700 hover:border-lime-accent/40 bg-ink-900/30 transition-all flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-ink-400 mb-1">Up next · {next.number}</div>
+                <div className="font-serif text-base text-ink-200 truncate">{next.title}</div>
+              </div>
+              <ArrowRight className="w-5 h-5 text-ink-400 group-hover:text-lime-accent group-hover:translate-x-1 transition-all shrink-0" />
+            </Link>
+          ) : (
+            <div className="p-6 border border-ink-800 bg-ink-900/20 flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-ink-400">
+              <Sparkles className="w-4 h-4 text-lime-accent" /> End of curriculum
+            </div>
           )}
         </div>
       </FadeIn>
@@ -115,6 +131,7 @@ function SectionBlock({ section }: { section: Section }) {
             ))}
           </div>
         )}
+        {section.viz && <InlineViz slug={section.viz.slug} caption={section.viz.caption} />}
       </section>
     </FadeIn>
   )
